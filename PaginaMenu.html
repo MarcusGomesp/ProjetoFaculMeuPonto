@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeuPonto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/PaginaMenu.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2 class="meu-ponto">MeuPonto</h2> <!-- Adicionada a classe para fonte específica -->
+        <nav>
+            <ul>
+                <li><a href="#">Página inicial</a></li>
+                <li><a href="#">Solicitações</a></li>
+                <li><a href="#">Gestão</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <span class="user">Aman Mathur</span>
+        </div>
+
+        <div class="dashboard">
+            <div class="card register">
+                <h3>Registrar Ponto</h3>
+                <span class="clock" id="clock">--:--:--</span>
+                <button class="btn" id="batidaPontoBtn">Bater ponto</button>
+            </div>
+            <div class="card bank">
+                <h3>Banco de Horas</h3>
+                <span class="hours" id="bancoHoras">+00:00</span>
+            </div>
+            <div class="card last-records">
+                <h3>Últimos Registros</h3>
+                <ul id="ultimosRegistros">
+                    <!-- Lista será preenchida dinamicamente -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="history">
+            <h3>Histórico dos registros</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Batidas</th>
+                        <th>Início</th>
+                        <th>Fim</th>
+                        <th>Total de horas</th>
+                        <th>Ajuste</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaHistórico">
+                    <!-- Os registros serão exibidos aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/PaginaMenu.js"></script>
+</body>
+</html>

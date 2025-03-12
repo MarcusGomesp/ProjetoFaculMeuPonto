@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - MeuPonto</title>
+    <link rel="stylesheet" href="css/Cadastro.css">
+</head>
+<body>
+
+    <!-- Área de fundo -->
+    <div class="background">
+        <div class="overlay"></div> <!-- Efeito de leve escurecimento no fundo -->
+
+        <!-- Retângulo Fundo -->
+        <div class="base"></div>
+
+        <div class="content">
+            <h1>MeuPonto</h1>
+            <p>Gerencie seu registro de ponto</p>
+            <p>com facilidade</p>
+        </div>
+        <img src="Imagens/ImagensLogin/ImagemLogin.png" alt="Ilustração MeuPonto">
+    </div>
+
+    <!-- Cadastro -->
+    <div class="cadastro-box">
+        <h2>Cadastro</h2>
+        <p>Preencha seus dados para criar uma conta</p>
+        <form id="cadastro-form">
+            <input type="text" name="nome" placeholder="Nome" required autocomplete="name">
+            <input type="email" name="email" placeholder="E-mail" required autocomplete="email">
+            <input type="text" name="cpf" placeholder="CPF" required autocomplete="off">
+            <input type="password" name="senha" placeholder="Senha" required autocomplete="new-password">
+            <input type="password" name="confirmarSenha" placeholder="Confirme a senha" required autocomplete="new-password">
+            <button type="submit">Registrar</button>
+        </form>
+    </div>
+
+    <script src="js/Cadastro.js"></script>
+</body>
+</html>
