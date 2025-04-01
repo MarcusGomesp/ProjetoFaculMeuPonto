@@ -16,7 +16,6 @@ body {
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Aplicando Montserrat apenas ao título "MeuPonto" */
 .meu-ponto {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
@@ -45,9 +44,52 @@ body {
 }
 
 .top-bar {
-    text-align: right;
-    padding: 10px 20px;
-    font-weight: bold;
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+    background: #f4f4f4;
+    position: relative;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding: 10px;
+    border-radius: 5px;
+    min-width: 120px;
+}
+
+.dropdown-menu li {
+    padding: 8px 12px;
+}
+
+.dropdown-menu li:hover {
+    background: #f0f0f0;
+}
+
+.dropdown-menu li a {
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
 }
 
 .dashboard {

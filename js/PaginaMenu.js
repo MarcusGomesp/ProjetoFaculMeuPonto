@@ -1,5 +1,53 @@
 const apiUrl = "https://localhost:7113/api/registro"; // URL da API
 
+function toggleMenu() { // isso aqui para funcionar o TopBar do Perfil
+    var menu = document.getElementById("dropdownMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+// Função para obter o nome do usuário pelo e-mail
+async function carregarNomeUsuario() {
+    const email = localStorage.getItem("emailUsuario");
+    console.log("E-mail recuperado do localStorage:", email);  // 🚩 Certifique-se que está aparecendo
+
+    if (!email) {
+        console.error("E-mail do usuário não encontrado.");
+        document.getElementById("userName").textContent = "E-mail não encontrado";
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://localhost:7113/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
+        
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar usuário: ${response.status}`);
+        }
+        
+        const usuario = await response.json();
+        console.log("Usuário retornado pela API:", usuario);  // 🚩 Verifique se os dados vêm corretamente
+
+        if (usuario && usuario.nome) {
+            document.getElementById("userName").textContent = usuario.nome;
+        } else {
+            document.getElementById("userName").textContent = "Usuário não encontrado";
+        }
+    } catch (error) {
+        console.error("Erro ao carregar o nome do usuário:", error);
+        document.getElementById("userName").textContent = "Erro ao carregar nome";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", carregarNomeUsuario);
+
+
+
+
+
+
+
+
+
 // Atualiza o relógio em tempo real
 function atualizarRelogio() {
     const agora = new Date();

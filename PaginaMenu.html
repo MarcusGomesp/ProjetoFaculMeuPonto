@@ -21,8 +21,18 @@
 
     <div class="main-content">
         <div class="top-bar">
-            <span class="user">Aman Mathur</span>
+            <div class="user-menu" onclick="toggleMenu()">
+                <img src="img/profile.jpg" alt="Foto de perfil" class="profile-pic">
+                <span class="user-name" id="userName">Carregando...</span>
+                <i class="fas fa-chevron-down"></i>
+                <ul class="dropdown-menu" id="dropdownMenu">
+                    <li><a href="#">Configurações</a></li>
+                    <li><a href="#">Editar Foto</a></li>
+                    <li><a href="Login.html">Sair</a></li>
+                </ul>
+            </div>
         </div>
+        
 
         <div class="dashboard">
             <div class="card register">
@@ -61,7 +71,6 @@
             </table>
         </div>
     </div>
-
     <script src="js/PaginaMenu.js"></script>
 </body>
 </html>

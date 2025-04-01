@@ -49,6 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const resultado = await cadastroService.cadastrarUsuario(usuario);
             alert("Cadastro realizado com sucesso!");
             console.log(resultado);
+
+            // Redireciona para outra página
+            window.location.href = "Login.html";
         } catch (error) {
             alert("Erro ao cadastrar");
         }
