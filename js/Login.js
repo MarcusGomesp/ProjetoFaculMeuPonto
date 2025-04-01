@@ -16,7 +16,7 @@ class LoginService {
             }
     
             const data = await response.json(); 
-            console.log("Dados retornados da API:", data); // 🚩 Deve mostrar email e nome
+            console.log("Dados retornados da API:", data); 
             return data;
         } catch (error) {
             console.error("Erro no login:", error);
@@ -40,10 +40,10 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const data = await loginService.autenticarUsuario(credenciais);
 
-            if (data && data.email && data.nome) {  // Agora verifica se email e nome foram retornados
+            if (data && data.email && data.nome) {  
                 localStorage.setItem("emailUsuario", data.email);
                 localStorage.setItem("nomeUsuario", data.nome);
-                console.log("Dados salvos no localStorage:", data.email, data.nome); // 🚩 Verifique se está salvando certo
+                console.log("Dados salvos no localStorage:", data.email, data.nome); 
                 window.location.replace("PaginaMenu.html");  
             } else {
                 alert("Falha ao autenticar. E-mail ou nome não retornado.");

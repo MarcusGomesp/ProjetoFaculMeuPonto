@@ -6,10 +6,10 @@ function toggleMenu() { // isso aqui para funcionar o TopBar do Perfil
 }
 
 
-// Função para obter o nome do usuário pelo e-mail
+//  obter o nome do usuário pelo e-mail
 async function carregarNomeUsuario() {
     const email = localStorage.getItem("emailUsuario");
-    console.log("E-mail recuperado do localStorage:", email);  // 🚩 Certifique-se que está aparecendo
+    console.log("E-mail recuperado do localStorage:", email);  
 
     if (!email) {
         console.error("E-mail do usuário não encontrado.");
@@ -25,7 +25,7 @@ async function carregarNomeUsuario() {
         }
         
         const usuario = await response.json();
-        console.log("Usuário retornado pela API:", usuario);  // 🚩 Verifique se os dados vêm corretamente
+        console.log("Usuário retornado pela API:", usuario);  
 
         if (usuario && usuario.nome) {
             document.getElementById("userName").textContent = usuario.nome;
