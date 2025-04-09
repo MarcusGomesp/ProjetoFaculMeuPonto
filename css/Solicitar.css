@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=NATS&display=swap');
+
+body {
+  font-family: 'NATS', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  background-color: #f5f8f6;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #fff;
+  padding: 20px;
+  border-right: 1px solid #eee;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.meu-ponto {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  margin-top: -10px;
+  font-family: 'Montserrat', sans-serif;
+  color: #333;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sidebar nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar nav ul li a:hover {
+  background-color: #20d48922;
+  color: #20d489;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+  background: #f4f4f4;
+  position: relative;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 2px solid #27ae60;
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 10px;
+  border-radius: 5px;
+  min-width: 120px;
+  z-index: 10;
+}
+
+.dropdown-menu li {
+  padding: 8px 12px;
+}
+
+.dropdown-menu li:hover {
+  background: #f0f0f0;
+}
+
+.dropdown-menu li a {
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+}
+
+.table-section {
+  padding: 20px;
+  background: #f5f8f6;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+thead {
+  background-color: #27ae60;
+  color: white;
+  text-align: left;
+}
+
+th, td {
+  padding: 12px 16px;
+}
+
+.add-button {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.add-btn {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: #27ae60;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.solicitar-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}

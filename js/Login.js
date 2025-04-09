@@ -40,10 +40,11 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const data = await loginService.autenticarUsuario(credenciais);
 
-            if (data && data.email && data.nome) {  
+            if (data && data.email && data.nome && data.cadastroId) {  
                 localStorage.setItem("emailUsuario", data.email);
                 localStorage.setItem("nomeUsuario", data.nome);
-                console.log("Dados salvos no localStorage:", data.email, data.nome); 
+                localStorage.setItem("cadastroId", data.cadastroId); 
+                console.log("Dados salvos no localStorage:", data.email, data.nome, data.cadastroId); 
                 window.location.replace("PaginaMenu.html");  
             } else {
                 alert("Falha ao autenticar. E-mail ou nome não retornado.");

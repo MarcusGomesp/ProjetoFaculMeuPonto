@@ -6,46 +6,6 @@ function toggleMenu() { // isso aqui para funcionar o TopBar do Perfil
 }
 
 
-//  obter o nome do usuário pelo e-mail
-async function carregarNomeUsuario() {
-    const email = localStorage.getItem("emailUsuario");
-    console.log("E-mail recuperado do localStorage:", email);  
-
-    if (!email) {
-        console.error("E-mail do usuário não encontrado.");
-        document.getElementById("userName").textContent = "E-mail não encontrado";
-        return;
-    }
-
-    try {
-        const response = await fetch(`https://localhost:7113/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
-        
-        if (!response.ok) {
-            throw new Error(`Erro ao buscar usuário: ${response.status}`);
-        }
-        
-        const usuario = await response.json();
-        console.log("Usuário retornado pela API:", usuario);  
-
-        if (usuario && usuario.nome) {
-            document.getElementById("userName").textContent = usuario.nome;
-        } else {
-            document.getElementById("userName").textContent = "Usuário não encontrado";
-        }
-    } catch (error) {
-        console.error("Erro ao carregar o nome do usuário:", error);
-        document.getElementById("userName").textContent = "Erro ao carregar nome";
-    }
-}
-
-document.addEventListener("DOMContentLoaded", carregarNomeUsuario);
-
-
-
-
-
-
-
 
 
 // Atualiza o relógio em tempo real
@@ -226,3 +186,98 @@ function atualizarInterface() {
 
 // Inicia a interface quando a página carregar
 document.addEventListener("DOMContentLoaded", atualizarInterface);
+
+
+
+
+
+
+
+
+
+
+//  obter o nome do usuário pelo e-mail
+async function carregarNomeUsuario() {
+    const email = localStorage.getItem("emailUsuario");
+    console.log("E-mail recuperado do localStorage:", email);  
+
+    if (!email) {
+        console.error("E-mail do usuário não encontrado.");
+        document.getElementById("userName").textContent = "E-mail não encontrado";
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://localhost:7113/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
+        
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar usuário: ${response.status}`);
+        }
+        
+        const usuario = await response.json();
+        console.log("Usuário retornado pela API:", usuario);  
+
+        if (usuario && usuario.nome) {
+            document.getElementById("userName").textContent = usuario.nome;
+        } else {
+            document.getElementById("userName").textContent = "Usuário não encontrado";
+        }
+    } catch (error) {
+        console.error("Erro ao carregar o nome do usuário:", error);
+        document.getElementById("userName").textContent = "Erro ao carregar nome";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", carregarNomeUsuario);
+
+
+
+
+// Upload de Imagem
+
+document.getElementById('uploadInput').addEventListener('change', async function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = async function () {
+        let base64Image = reader.result;
+
+        base64Image = base64Image.replace(/^data:image\/[a-z]+;base64,/, "");
+
+        const cadastroId = localStorage.getItem("cadastroId"); 
+
+        if (!cadastroId) {
+            alert("ID do usuário não encontrado. Faça login novamente.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://localhost:7113/api/cadastro/Imagem/${cadastroId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ imagemBase64: base64Image })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao enviar a imagem.");
+            }
+
+            alert("Imagem enviada com sucesso!");
+            document.getElementById('profilePic').src = `data:image/png;base64,${base64Image}`;
+
+        } catch (error) {
+            console.error("Erro ao enviar a imagem:", error);
+            alert("Ocorreu um erro ao enviar a imagem.");
+        }
+    };
+
+    reader.onerror = function (error) {
+        console.error("Erro ao ler o arquivo:", error);
+    };
+});
+

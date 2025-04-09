@@ -9,12 +9,13 @@
 </head>
 <body>
     <div class="sidebar">
-        <h2 class="meu-ponto">MeuPonto</h2> <!-- Adicionada a classe para fonte específica -->
+        <h2 class="meu-ponto">MeuPonto</h2>
         <nav>
             <ul>
-                <li><a href="#">Página inicial</a></li>
-                <li><a href="#">Solicitações</a></li>
-                <li><a href="#">Gestão</a></li>
+                <li><a href="PaginaMenu.html"><i class="fa fa-home"></i> Página inicial</a></li>
+                <li><a href="Solicitar.html"><i class="fa fa-file-alt"></i> Solicitações</a></li>
+                <li><a href="Gestao.html"><i class="fa fa-cogs"></i> Gestão</a></li>
+                
             </ul>
         </nav>
     </div>
@@ -22,17 +23,19 @@
     <div class="main-content">
         <div class="top-bar">
             <div class="user-menu" onclick="toggleMenu()">
-                <img src="img/profile.jpg" alt="Foto de perfil" class="profile-pic">
+                <img src="img/profile.jpg" alt="Foto de perfil" class="profile-pic" id="profilePic">
                 <span class="user-name" id="userName">Carregando...</span>
                 <i class="fas fa-chevron-down"></i>
                 <ul class="dropdown-menu" id="dropdownMenu">
                     <li><a href="#">Configurações</a></li>
-                    <li><a href="#">Editar Foto</a></li>
+                    <li>
+                        <a href="#" onclick="document.getElementById('uploadInput').click()">Editar Foto</a>
+                        <input type="file" id="uploadInput" accept="image/*" style="display: none;">
+                    </li>
                     <li><a href="Login.html">Sair</a></li>
                 </ul>
             </div>
         </div>
-        
 
         <div class="dashboard">
             <div class="card register">
@@ -46,9 +49,7 @@
             </div>
             <div class="card last-records">
                 <h3>Últimos Registros</h3>
-                <ul id="ultimosRegistros">
-                    <!-- Lista será preenchida dinamicamente -->
-                </ul>
+                <ul id="ultimosRegistros"></ul>
             </div>
         </div>
 
@@ -65,12 +66,11 @@
                         <th>Ajuste</th>
                     </tr>
                 </thead>
-                <tbody id="tabelaHistórico">
-                    <!-- Os registros serão exibidos aqui -->
-                </tbody>
+                <tbody id="tabelaHistórico"></tbody>
             </table>
         </div>
     </div>
+
     <script src="js/PaginaMenu.js"></script>
 </body>
 </html>
