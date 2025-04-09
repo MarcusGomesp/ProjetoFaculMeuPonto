@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>MeuPonto</title>
+  <link rel="stylesheet" href="css/Gestao.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>MeuPonto</h2>
+    <nav class="menu">
+      <a href="PaginaMenu.html" class="menu-item"><i class="fa fa-home"></i> Página Inicial</a>
+      <a href="Solicitar.html" class="menu-item"><i class="fa fa-file-alt"></i> Solicitações</a>
+      <a href="Gestao.html" class="menu-item"><i class="fa fa-cogs"></i> Gestão</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="header">
+      <div class="user-info">
+        <span>Aman Mathur</span>
+        <img src="https://via.placeholder.com/40" alt="Foto do usuário" class="user-avatar">
+      </div>
+    </header>
+
+    <section class="solicitacoes">
+      <div class="section-header">
+        <h3>Solicitações</h3>
+        <a href="Solicitar.html" class="ver-tudo">Ver tudo</a>
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td>#108</td>
+            <td>Raul Sarasvati</td>
+            <td><button class="btn detalhes" a href="Solicitar.html">Detalhes</button></td>
+            <td class="btn-group">
+              <button class="btn recusar">Recusar</button>
+              <button class="btn aprovar">Aprovar</button>
+            </td>
+          </tr>
+          <!-- Outros registros aqui -->
+        </tbody>
+      </table>
+    </section>
+
+    <section class="gerenciamento">
+      <div class="section-header">
+        <h3>Gerenciamento</h3>
+        <span>Selecionar ano/mês</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Status</th>
+            <th>Histórico</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="gerenciamento-body">
+          <tr>
+            <td><img src="https://via.placeholder.com/30" class="avatar"> Raul Sarasvati</td>
+            <td class="positivo">+01:27</td>
+            <td><a href="#">Visualizar histórico</a></td>
+            <td>5</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

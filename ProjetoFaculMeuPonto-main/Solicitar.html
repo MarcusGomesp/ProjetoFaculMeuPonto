@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MeuPonto</title>
+  <link rel="stylesheet" href="css/Solicitar.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Menu lateral -->
+    <aside class="sidebar">
+      <h2 class="logo">MeuPonto</h2>
+      <nav class="menu">
+        <a href="PaginaMenu.html" class="menu-item"><i class="fa fa-home"></i> Página Inicial</a>
+        <a href="Solicitar.html" class="menu-item"><i class="fa fa-file-alt"></i> Solicitações</a>
+        <a href="Gestao.html" class="menu-item"><i class="fa fa-cogs"></i> Gestão</a>
+      </nav>
+    </aside>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="user-info" id="user-info">
+          <!-- Preenchido via JS -->
+        </div>
+      </header>
+
+      <!-- Tabela -->
+      <section class="table-section">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Hora</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>27/02/2025</td>
+              <td>09:02</td>
+              <td>
+                <a href="IncluirEditar.html">
+                  <button class="edit-btn"><i class="fa fa-pen-to-square"></i></button>
+                </a>
+              </td>
+              
+            </tr>
+            <tr>
+              <td>27/02/2025</td>
+              <td>12:23</td>
+              <td>
+                <a href="IncluirEditar.html">
+                  <button class="edit-btn"><i class="fa fa-pen-to-square"></i></button>
+                </a>
+              </td>              
+            </tr>
+            <tr>
+              <td>27/02/2025</td>
+              <td>13:23</td>
+              <td>
+                <a href="IncluirEditar.html">
+                  <button class="edit-btn"><i class="fa fa-pen-to-square"></i></button>
+                </a>
+              </td>              
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Botão adicionar -->
+        <div class="add-button">
+          <a href="IncluirEditar.html">
+            <button class="add-btn"><i class="fa fa-plus"></i></button>
+          </a>
+        </div>        
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Exemplo de chamada à API
+    const userInfo = document.getElementById("user-info");
+
+    // Simulando uma resposta da API
+    const userData = {
+      name: "Joana Moura",
+      photo: "https://randomuser.me/api/portraits/women/44.jpg"
+    };
+
+    userInfo.innerHTML = `
+      <img src="${userData.photo}" alt="User Photo" class="user-photo"/>
+      <span class="user-name">${userData.name}</span>
+    `;
+  </script>
+</body>
+</html>

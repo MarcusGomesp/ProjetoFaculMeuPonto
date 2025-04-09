@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap');
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: rgb(236,255,250);
+    background: linear-gradient(0deg, rgba(236,255,250,1) 0%, rgba(182,255,222,1) 100%);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Fundo com imagem e texto */
+.background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #d1fae5, #f0fdfa);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.base{
+    position: absolute;
+    bottom: 0;
+    left: 0%;
+    width: 100%;
+    height: 120px;
+    background-color: black;
+}
+
+.background img {
+    position: absolute;
+    bottom: 25px; /* para ajustar a imagem */
+    left: 10%;
+    max-width: 40%;
+    
+}
+
+/* Texto no fundo */
+.content {
+    position: absolute;
+    top: 8%; /* para ajustar a frase */
+    left: 8%;
+    color: black;
+}
+
+.content h1 {
+    font-size: 2.5rem;
+    font-family: 'Montserrat', sans-serif; /* Mantendo Montserrat no título */
+}
+
+.content p {
+    font-size: 1.2rem;
+    font-family: 'Poppins', sans-serif; /* Aplicando Poppins na frase */
+}
+
+/* Efeito de leve escurecimento para destacar o login */
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Box de Login */
+.login-box {
+    position: relative;
+    z-index: 2; /* Destaca sobre o fundo */
+    background: white;
+    padding: 120px;
+    width: 520px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    margin-right: 80px;
+   
+}
+
+.login-box h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    
+}
+
+.login-box p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 50px;
+}
+
+/* Formulário */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+a {
+    text-decoration: none;
+    color: #059669;
+    font-size: 0.9rem;
+    align-self: flex-start;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #059669;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .background img {
+        max-width: 60%;
+        left: 5%;
+    }
+
+    .content {
+        left: 5%;
+        text-align: left;
+    }
+
+    .login-box {
+        width: 90%;
+    }
+}
+
+@media (min-width: 1440px) { 
+    .login-box {
+        width: 600px;  /* Aumenta a largura do box */
+        padding: 100px; /* Ajuste do padding para melhor distribuição */
+        margin-right: 150px; /* Afasta um pouco para melhorar o alinhamento */
+    }
+
+    .content {
+        top: 20%; /* Ajusta a posição do texto */
+        left: 12%; /* Centraliza melhor o conteúdo */
+    }
+
+    .background img {
+        max-width: 35%; /* Reduz o tamanho da imagem em telas grandes */
+        left: 12%;
+    }
+}
+
+@media (min-width: 1920px) {
+    .login-box {
+        width: 700px; /* Aumenta a largura */
+        padding: 60px 100px; /* Reduz padding vertical */
+        margin-right: 200px; /* Ajusta margem para alinhamento */
+    }
+
+    .content {
+        top: 18%; /* Posiciona melhor o texto */
+        left: 15%;
+    }
+
+    .content h1 {
+        font-size: 3rem; /* Título maior */
+    }
+
+    .content p {
+        font-size: 1.5rem; /* Texto mais legível */
+    }
+
+    .background img {
+        max-width: 30%; /* Controla tamanho da imagem */
+        bottom: 80px; /* Posiciona melhor a imagem */
+    }
+
+    .base {
+        height: 180px; /* Aumenta a base preta */
+    }
+}
