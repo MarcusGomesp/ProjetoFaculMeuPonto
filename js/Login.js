@@ -1,6 +1,6 @@
 class LoginService {
     constructor() {
-        this.apiUrl = "https://localhost:7113/api/cadastro/login";  
+        this.apiUrl = "https://localhost:7212/api/Cadastro/login";
     }
 
     async autenticarUsuario(credenciais) {
@@ -10,13 +10,13 @@ class LoginService {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(credenciais)
             });
-    
+
             if (!response.ok) {
                 throw new Error("Erro ao autenticar usuário");
             }
-    
-            const data = await response.json(); 
-            console.log("Dados retornados da API:", data); 
+
+            const data = await response.json();
+            console.log("🔐 Dados retornados da API:", data);
             return data;
         } catch (error) {
             console.error("Erro no login:", error);
@@ -35,20 +35,40 @@ document.addEventListener("DOMContentLoaded", function () {
         const emailInput = loginForm.querySelector("input[type='email']");
         const passwordInput = loginForm.querySelector("input[type='password']");
 
-        const credenciais = { Email: emailInput.value, Senha: passwordInput.value };
+        const credenciais = {
+            Email: emailInput.value,
+            Senha: passwordInput.value
+        };
 
         try {
             const data = await loginService.autenticarUsuario(credenciais);
 
-            if (data && data.email && data.nome && data.cadastroId) {  
-                localStorage.setItem("emailUsuario", data.email);
-                localStorage.setItem("nomeUsuario", data.nome);
-                localStorage.setItem("cadastroId", data.cadastroId); 
-                console.log("Dados salvos no localStorage:", data.email, data.nome, data.cadastroId); 
-                window.location.replace("PaginaMenu.html");  
-            } else {
-                alert("Falha ao autenticar. E-mail ou nome não retornado.");
+            const cadastroId = parseInt(data?.cadastroId);
+            const idRegistro = data?.idRegistro;
+
+            // ✅ Validação segura
+            if (!data || !data.email || !data.nome || isNaN(cadastroId)) {
+                alert("Falha ao autenticar. Dados inválidos.");
+                console.error("❌ Dados inválidos recebidos:", data);
+                return;
             }
+
+            localStorage.setItem("emailUsuario", data.email);
+            localStorage.setItem("nomeUsuario", data.nome);
+            localStorage.setItem("cadastroId", cadastroId.toString());
+
+            if (idRegistro !== null && idRegistro !== undefined) {
+                localStorage.setItem("idRegistro", idRegistro.toString());
+            }
+
+            console.log("✅ Dados salvos no localStorage:", {
+                email: data.email,
+                nome: data.nome,
+                cadastroId,
+                idRegistro
+            });
+
+            window.location.replace("PaginaMenu.html");
         } catch (error) {
             console.error("Erro ao fazer login:", error);
             alert("Erro ao fazer login. Verifique suas credenciais.");
@@ -59,6 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
 if (window.history && window.history.pushState) {
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = function () {
-        window.history.pushState(null, "", window.location.href);  
+        window.history.pushState(null, "", window.location.href);
     };
 }

@@ -1,6 +1,6 @@
 class CadastroService {
     constructor() {
-        this.apiUrl = "https://localhost:7113/api/cadastro";
+        this.apiUrl = "https://localhost:7212/api/Cadastro";
     }
 
     async cadastrarUsuario(usuario) {
@@ -30,30 +30,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-
+    
         const nome = form.elements["nome"].value;
+        const cargo = form.elements["cargo"].value;
+        const departamento = form.elements["departamento"].value;
         const email = form.elements["email"].value;
-        const cpf = form.elements["cpf"].value;
+        const cpf = parseInt(form.elements["cpf"].value); // garante que vai como número
         const senha = form.elements["senha"].value;
         const confirmarSenha = form.elements["confirmarSenha"].value;
-
+    
         // Valida se as senhas são iguais
         if (senha !== confirmarSenha) {
             alert("As senhas não coincidem!");
             return;
         }
-
-        const usuario = { Nome: nome, Email: email, CPF: cpf, Senha: senha };
-
+    
+        const usuario = {
+            Nome: nome,
+            Cargo: cargo,
+            Departamento: departamento,
+            Email: email,
+            CPF: cpf,
+            Senha: senha
+        };
+    
         try {
             const resultado = await cadastroService.cadastrarUsuario(usuario);
             alert("Cadastro realizado com sucesso!");
             console.log(resultado);
-
+    
             // Redireciona para outra página
             window.location.href = "Login.html";
         } catch (error) {
             alert("Erro ao cadastrar");
         }
-    });
+    });    
 });

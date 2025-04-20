@@ -1,4 +1,3 @@
-const apiUrl = "https://localhost:7113/api/registro"; // URL da API
 
 function toggleMenu() { // isso aqui para funcionar o TopBar do Perfil
     var menu = document.getElementById("dropdownMenu");
@@ -6,187 +5,194 @@ function toggleMenu() { // isso aqui para funcionar o TopBar do Perfil
 }
 
 
-
-
-// Atualiza o relógio em tempo real
-function atualizarRelogio() {
-    const agora = new Date();
-    const opcoes = { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' };
-    const horaBrasilia = new Intl.DateTimeFormat('pt-BR', opcoes).format(agora);
-    document.getElementById('clock').textContent = horaBrasilia;
-}
-setInterval(atualizarRelogio, 1000);
-atualizarRelogio();
-
+const apiUrl = "https://localhost:7212/api/Registro";
 let registroAtual = null;
 const botaoBatida = document.getElementById("batidaPontoBtn");
 
-// Registra ou finaliza o ponto
-botaoBatida.addEventListener("click", async function () {
-    try {
-        const agora = new Date().toISOString();
+class RegistroService {
+    constructor() {
+        this.apiUrl = apiUrl;
+    }
 
-        if (!registroAtual) {
-            // Atualiza a interface imediatamente para parecer mais rápido
-            registroAtual = { inicio: agora, fim: null, batidas: 1 };
-            botaoBatida.classList.replace("btn-primary", "btn-danger");
-            botaoBatida.textContent = "Finalizar Ponto";
+    async validarIdRegistro() {
+        const cadastroId = localStorage.getItem("cadastroId");
+        if (!cadastroId) return false;
 
-            const response = await fetch(apiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(registroAtual)
+        try {
+            const response = await fetch(`https://localhost:7212/api/cadastro/usuario/${cadastroId}`);
+            return response.ok;
+        } catch (error) {
+            console.error("Erro ao validar ID:", error);
+            return false;
+        }
+    }
+
+    async registrarPonto() {
+        try {
+            const agora = new Date().toISOString();
+            const cadastroId = localStorage.getItem("cadastroId");
+
+            if (!await this.validarIdRegistro()) return;
+
+            if (!registroAtual) {
+                registroAtual = {
+                    dataInicio: agora,
+                    qtdeBatidas: 1,
+                    userId: parseInt(cadastroId)
+                };
+                botaoBatida.textContent = "Saída para almoço";
+            } else {
+                registroAtual.qtdeBatidas++;
+
+                if (registroAtual.qtdeBatidas === 2) {
+                    registroAtual.saidaAlmoco = agora;
+                    botaoBatida.textContent = "Volta do almoço";
+                } else if (registroAtual.qtdeBatidas === 3) {
+                    registroAtual.voltaAlmoco = agora;
+                    botaoBatida.textContent = "Finalizar expediente";
+                } else if (registroAtual.qtdeBatidas === 4) {
+                    registroAtual.fim = agora;
+                    botaoBatida.textContent = "Bater ponto";
+
+                    await fetch(`${this.apiUrl}/${registroAtual.idRegistro}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(registroAtual)
+                    });
+
+                    registroAtual = null;
+                    this.atualizarInterface();
+                    return;
+                }
+            }
+
+            if (registroAtual.qtdeBatidas === 1) {
+                const response = await fetch(this.apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(registroAtual)
+                });
+
+                const dados = await response.json();
+                registroAtual.idRegistro = dados.idRegistro;
+                localStorage.setItem("idRegistro", dados.idRegistro);
+            } else {
+                await fetch(`${this.apiUrl}/${registroAtual.idRegistro}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(registroAtual)
+                });
+            }
+
+            this.atualizarInterface();
+        } catch (error) {
+            console.error("Erro ao registrar batida:", error);
+        }
+    }
+
+    async listarHistorico() {
+        try {
+            const response = await fetch(this.apiUrl);
+            const registros = await response.json();
+            const tabela = document.getElementById("tabelaHistórico");
+            tabela.innerHTML = "";
+
+            registros.forEach(r => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${new Date(r.dataInicio).toLocaleDateString()}</td>
+                    <td>${r.qtdeBatidas}</td>
+                    <td>${new Date(r.dataInicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                    <td>${r.fim ? new Date(r.fim).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Aguardando"}</td>
+                    <td>${r.totalHora ? this.formatarHoras(r.totalHora) : '-'}</td>
+                    <td>
+                        <button class="adjust-btn" onclick="ajustarRegistro('${r.idRegistro}')">Ajustar</button>
+                        <button class="delete-btn" onclick="deletarRegistro('${r.idRegistro}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tabela.appendChild(tr);
             });
 
-            const dados = await response.json();
-            registroAtual.id = dados.id;
-        } else if (!registroAtual.fim) {
-            botaoBatida.classList.replace("btn-danger", "btn-primary");
-            botaoBatida.textContent = "Bater Ponto";
-
-            registroAtual.fim = agora;
-            registroAtual.batidas++;
-
-            await fetch(`${apiUrl}/${registroAtual.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(registroAtual)
-            });
-
-            registroAtual = null;
+            const ultimo = registros[registros.length - 1];
+            if (ultimo && ultimo.qtdeBatidas < 4) {
+                registroAtual = { ...ultimo };
+            
+                if (registroAtual.qtdeBatidas === 1) {
+                    botaoBatida.textContent = "Saída para almoço";
+                } else if (registroAtual.qtdeBatidas === 2) {
+                    botaoBatida.textContent = "Volta do almoço";
+                } else if (registroAtual.qtdeBatidas === 3) {
+                    botaoBatida.textContent = "Finalizar expediente";
+                }
+            
+                botaoBatida.classList.replace("btn-primary", "btn-danger");
+            }
+        } catch (error) {
+            console.error("Erro ao listar histórico:", error);
         }
 
-        atualizarInterface();
-    } catch (error) {
-        console.error("Erro ao registrar/finalizar batida:", error);
-    }
-});
-
-// Exibe o histórico de registros
-async function listarHistorico() {
-    try {
-        const response = await fetch(apiUrl);
-        const batidas = await response.json();
         
-        const tabela = document.getElementById("tabelaHistórico");
-        tabela.innerHTML = "";
+    }
+    
+    async listarUltimosRegistros() {
+        try {
+            const response = await fetch(this.apiUrl);
+            const registros = await response.json();
 
-        batidas.forEach(batida => {
-            const tr = document.createElement("tr");
+            const lista = document.getElementById("ultimosRegistros");
+            lista.innerHTML = "";
 
-            tr.innerHTML = `
-                <td>${new Date(batida.inicio).toLocaleDateString()}</td>
-                <td>${batida.batidas}</td>
-                <td>${new Date(batida.inicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                <td>${batida.fim ? new Date(batida.fim).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Aguardando'}</td>
-                <td>${batida.totalTrabalhado ? formatarHoras(batida.totalTrabalhado) : '-'}</td>
-                <td>
-                    <button class="adjust-btn" onclick="ajustarRegistro('${batida.id}')">Ajustar</button>
-                    <button class="delete-btn" onclick="deletarRegistro('${batida.id}')">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>
-            `;
-            tabela.appendChild(tr);
-        });
+            // Mostra os 3 últimos registros (ou menos)
+            const ultimos = registros.slice(-3).reverse();
 
-        const ultimoRegistro = batidas[batidas.length - 1];
-        if (ultimoRegistro && !ultimoRegistro.fim) {
-            registroAtual = ultimoRegistro;
-            botaoBatida.classList.replace("btn-primary", "btn-danger");
-            botaoBatida.textContent = "Finalizar Ponto";
+            ultimos.forEach(r => {
+                const item = document.createElement("li");
+                const data = new Date(r.dataInicio).toLocaleDateString();
+                const hora = new Date(r.dataInicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                item.textContent = `${data} - ${hora} (${r.qtdeBatidas} batida${r.qtdeBatidas > 1 ? 's' : ''})`;
+                lista.appendChild(item);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar últimos registros:", error);
         }
-    } catch (error) {
-        console.error("Erro ao carregar histórico:", error);
+    }
+
+    formatarHoras(str) {
+        if (!str) return '-';
+        const [h, m] = str.split(':').map(Number);
+        return `${h}h ${m}m`;
+    }
+
+    atualizarInterface() {
+        this.listarHistorico();
+    }
+
+    async carregarDados() {
+        this.atualizarRelogio();
+        await this.listarHistorico();
+        await this.listarUltimosRegistros();
+    }
+
+    atualizarRelogio() {
+        const agora = new Date();
+        const hora = new Intl.DateTimeFormat('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(agora);
+        document.getElementById('clock').textContent = hora;
     }
 }
 
-// Exibe os últimos registros com apenas data e hora
-async function listarUltimosRegistros() {
-    try {
-        const response = await fetch(apiUrl);
-        const batidas = await response.json();
+const registroService = new RegistroService();
 
-        const lista = document.getElementById("ultimosRegistros");
-        lista.innerHTML = "";
-
-        batidas.slice(-4).forEach(batida => {
-            const data = new Date(batida.inicio).toLocaleDateString();
-            const horaInicio = new Date(batida.inicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const horaFim = batida.fim ? new Date(batida.fim).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Aguardando";
-
-            const li = document.createElement("li");
-            li.textContent = `${data} ${horaInicio} - ${horaFim}`;
-            lista.appendChild(li);
-        });
-    } catch (error) {
-        console.error("Erro ao carregar últimos registros:", error);
-    }
-}
-
-// Formata as horas trabalhadas
-function formatarHoras(totalTrabalhado) {
-    if (!totalTrabalhado) return "-";
-    const [horas, minutos] = totalTrabalhado.split(':').map(Number);
-    return `${horas}h ${minutos}m`;
-}
-
-// Ajusta um registro de ponto
-async function ajustarRegistro(id) {
-    try {
-        const response = await fetch(`${apiUrl}/${id}`);
-        const batida = await response.json();
-
-        const novoInicio = prompt("Digite o novo horário de início (HH:mm)", new Date(batida.inicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-        const novoFim = prompt("Digite o novo horário de fim (HH:mm)", batida.fim ? new Date(batida.fim).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "");
-
-        if (novoInicio) {
-            const dataInicio = new Date(batida.inicio);
-            const [horaInicio, minInicio] = novoInicio.split(':').map(Number);
-            dataInicio.setHours(horaInicio, minInicio);
-            batida.inicio = dataInicio.toISOString();
-        }
-
-        if (novoFim) {
-            const dataFim = new Date(batida.inicio);
-            const [horaFim, minFim] = novoFim.split(':').map(Number);
-            dataFim.setHours(horaFim, minFim);
-            batida.fim = dataFim.toISOString();
-        }
-
-        await fetch(`${apiUrl}/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(batida)
-        });
-
-        atualizarInterface();
-    } catch (error) {
-        console.error("Erro ao ajustar registro:", error);
-    }
-}
-
-// Exclui um registro de ponto
-async function deletarRegistro(id) {
-    try {
-        if (confirm("Tem certeza que deseja excluir este registro?")) {
-            await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
-            atualizarInterface();
-        }
-    } catch (error) {
-        console.error("Erro ao deletar registro:", error);
-    }
-}
-
-// Atualiza a interface com os dados mais recentes
-function atualizarInterface() {
-    listarHistorico();
-    listarUltimosRegistros();
-}
-
-// Inicia a interface quando a página carregar
-document.addEventListener("DOMContentLoaded", atualizarInterface);
-
+document.addEventListener("DOMContentLoaded", () => {
+    registroService.carregarDados();
+    document.getElementById("batidaPontoBtn").addEventListener("click", () => registroService.registrarPonto());
+});
 
 
 
@@ -208,7 +214,7 @@ async function carregarNomeUsuario() {
     }
 
     try {
-        const response = await fetch(`https://localhost:7113/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
+        const response = await fetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
         
         if (!response.ok) {
             throw new Error(`Erro ao buscar usuário: ${response.status}`);
@@ -219,6 +225,14 @@ async function carregarNomeUsuario() {
 
         if (usuario && usuario.nome) {
             document.getElementById("userName").textContent = usuario.nome;
+
+            if (usuario.userId) {
+                localStorage.setItem("cadastroId", usuario.userId);
+                console.log("ID salvo no localStorage:", usuario.userId);
+            } else {
+                console.warn("userId não encontrado na resposta da API.");
+            }
+
         } else {
             document.getElementById("userName").textContent = "Usuário não encontrado";
         }
@@ -227,6 +241,7 @@ async function carregarNomeUsuario() {
         document.getElementById("userName").textContent = "Erro ao carregar nome";
     }
 }
+
 
 document.addEventListener("DOMContentLoaded", carregarNomeUsuario);
 
@@ -255,7 +270,7 @@ document.getElementById('uploadInput').addEventListener('change', async function
         }
 
         try {
-            const response = await fetch(`https://localhost:7113/api/cadastro/Imagem/${cadastroId}`, {
+            const response = await fetch(`https://localhost:7212/api/cadastro/Imagem/${cadastroId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
