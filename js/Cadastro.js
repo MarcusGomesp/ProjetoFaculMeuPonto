@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const cargo = form.elements["cargo"].value;
         const departamento = form.elements["departamento"].value;
         const email = form.elements["email"].value;
-        const cpf = parseInt(form.elements["cpf"].value); // garante que vai como número
+        const cpf = parseInt(form.elements["cpf"].value);
         const senha = form.elements["senha"].value;
         const confirmarSenha = form.elements["confirmarSenha"].value;
     

@@ -10,7 +10,7 @@ async function carregarNomeUsuario() {
     }
   
     try {
-        const response = await fetch(`https://localhost:7113/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
+        const response = await fetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
         
         if (!response.ok) {
             throw new Error(`Erro ao buscar usuário: ${response.status}`);
@@ -56,7 +56,7 @@ async function carregarNomeUsuario() {
         }
   
         try {
-            const response = await fetch(`https://localhost:7113/api/cadastro/Imagem/${cadastroId}`, {
+            const response = await fetch(`https://localhost:7212/api/cadastro/Imagem/${cadastroId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
