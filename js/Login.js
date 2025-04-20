@@ -53,12 +53,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            // ✅ LIMPA TUDO ANTES DE SALVAR
+            localStorage.clear();
+
+            // ✅ Agora salva os dados novos
             localStorage.setItem("emailUsuario", data.email);
             localStorage.setItem("nomeUsuario", data.nome);
             localStorage.setItem("cadastroId", cadastroId.toString());
 
             if (idRegistro !== null && idRegistro !== undefined) {
                 localStorage.setItem("idRegistro", idRegistro.toString());
+            }
+
+            if (data.urlProfilePic) {
+                localStorage.setItem("urlProfilePic", data.urlProfilePic);
             }
 
             console.log("✅ Dados salvos no localStorage:", {
@@ -76,6 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Impede voltar para tela anterior com botão "voltar"
 if (window.history && window.history.pushState) {
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = function () {
