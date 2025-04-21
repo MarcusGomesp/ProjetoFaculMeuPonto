@@ -173,3 +173,28 @@ th, td {
   font-size: 16px;
   cursor: pointer;
 }
+
+
+.status-aprovado {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.status-pendente {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.status-rejeitado {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+}

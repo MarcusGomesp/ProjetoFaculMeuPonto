@@ -1,196 +1,332 @@
-//  obter o nome do usuário pelo e-mail
+// ---------- NOME DO USUÁRIO ----------
 async function carregarNomeUsuario() {
     const email = localStorage.getItem("emailUsuario");
-    console.log("E-mail recuperado do localStorage:", email);  
-  
-    if (!email) {
-        console.error("E-mail do usuário não encontrado.");
-        document.getElementById("userName").textContent = "E-mail não encontrado";
-        return;
-    }
-  
+    if (!email) return;
+
     try {
         const response = await fetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
-        
-        if (!response.ok) {
-            throw new Error(`Erro ao buscar usuário: ${response.status}`);
-        }
-        
         const usuario = await response.json();
-        console.log("Usuário retornado pela API:", usuario);  
-  
-        if (usuario && usuario.nome) {
-            document.getElementById("userName").textContent = usuario.nome;
-        } else {
-            document.getElementById("userName").textContent = "Usuário não encontrado";
-        }
+        document.getElementById("userName").textContent = usuario.nome || "Usuário";
     } catch (error) {
         console.error("Erro ao carregar o nome do usuário:", error);
-        document.getElementById("userName").textContent = "Erro ao carregar nome";
     }
-  }
-  
-  document.addEventListener("DOMContentLoaded", carregarNomeUsuario);
-  
-  
-  
-  // Upload de Imagem
-  
-  document.getElementById('uploadInput').addEventListener('change', async function (event) {
+}
+document.addEventListener("DOMContentLoaded", carregarNomeUsuario);
+
+// ---------- IMAGEM ----------
+document.getElementById('uploadInput').addEventListener('change', async function (event) {
     const file = event.target.files[0];
     if (!file) return;
-  
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
-  
+
     reader.onload = async function () {
-        let base64Image = reader.result;
-  
-        base64Image = base64Image.replace(/^data:image\/[a-z]+;base64,/, "");
-  
-        const cadastroId = localStorage.getItem("cadastroId"); 
-  
-        if (!cadastroId) {
-            alert("ID do usuário não encontrado. Faça login novamente.");
-            return;
-        }
-  
+        let base64Image = reader.result.replace(/^data:image\/[a-z]+;base64,/, "");
+        const cadastroId = localStorage.getItem("cadastroId");
+        if (!cadastroId) return alert("ID não encontrado.");
+
         try {
             const response = await fetch(`https://localhost:7212/api/cadastro/Imagem/${cadastroId}`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ imagemBase64: base64Image })
             });
-  
-            if (!response.ok) {
-                throw new Error("Erro ao enviar a imagem.");
+
+            if (response.ok) {
+                alert("Imagem enviada!");
+                document.getElementById('profilePic').src = `data:image/png;base64,${base64Image}`;
             }
-  
-            alert("Imagem enviada com sucesso!");
-            document.getElementById('profilePic').src = `data:image/png;base64,${base64Image}`;
-  
         } catch (error) {
-            console.error("Erro ao enviar a imagem:", error);
-            alert("Ocorreu um erro ao enviar a imagem.");
+            console.error("Erro ao enviar imagem:", error);
         }
     };
+});
+
+// ---------- MODAL ----------
+function abrirFormularioSolicitacao() {
+    document.getElementById("modalSolicitacao").style.display = "flex";
+}
+
+function fecharFormularioSolicitacao() {
+    document.getElementById("modalSolicitacao").style.display = "none";
+}
+
+
+// ---------- ENVIAR SOLICITAÇÃO ----------
+async function enviarSolicitacao() {
+    const userId = parseInt(localStorage.getItem("cadastroId"));
+    const idRegistro = parseInt(localStorage.getItem("idRegistro"));
   
-    reader.onerror = function (error) {
-        console.error("Erro ao ler o arquivo:", error);
+    const data = document.getElementById("dataSolicitacao").value;
+    const horarioRaw = document.getElementById("motivoSolicitacao").value.trim(); 
+    const horarioFormatado = horarioRaw.length === 5 ? `${horarioRaw}:00` : horarioRaw; 
+    const observacao = document.getElementById("justificativaSolicitacao").value.trim();
+  
+    if (!data || !horarioFormatado || !observacao) {
+      alert("Preencha todos os campos.");
+      return;
+    }
+
+    if (horarioFormatado.startsWith("-")) {
+        alert("O horário não pode ser negativo. Insira um horário válido entre 00:00 e 23:59.");
+        return;
+    }
+
+    const regexHorario = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+    if (!regexHorario.test(horarioFormatado)) {
+        alert("Formato de horário inválido. Use o formato HH:mm ou HH:mm:ss.");
+        return;
+    }
+  
+    const body = {
+        userId: userId,
+        idRegistro: idRegistro,
+        horario: horarioFormatado,
+        status: 0,
+        observacao: observacao
     };
-  });
   
-  
-  document.addEventListener("DOMContentLoaded", () => {
-    carregarInformacoesUsuario(); // carrega nome e imagem do usuário
-  
-    const tableBody = document.querySelector("tbody");
-  
-    // Toggle do menu do perfil
-    window.toggleMenu = function () {
-        const menu = document.getElementById("dropdownMenu");
-        menu.style.display = menu.style.display === "block" ? "none" : "block";
-    };
-  
-    // Clique para editar/salvar
-    tableBody.addEventListener("click", function (e) {
-        if (e.target.closest(".edit-btn")) {
-            const btn = e.target.closest(".edit-btn");
-            const row = btn.closest("tr");
-            const dateCell = row.children[0];
-            const timeCell = row.children[1];
-  
-            const isEditing = row.dataset.editing === "true";
-  
-            if (isEditing) {
-                const dateInput = dateCell.querySelector("input");
-                const timeInput = timeCell.querySelector("input");
-  
-                const formattedDate = formatDateDisplay(dateInput.value);
-                const formattedTime = timeInput.value;
-  
-                dateCell.textContent = formattedDate;
-                timeCell.textContent = formattedTime;
-  
-                btn.innerHTML = `<i class="fa fa-pen-to-square"></i>`;
-                row.dataset.editing = "false";
-            } else {
-                const currentDate = dateCell.textContent;
-                const currentTime = timeCell.textContent;
-  
-                dateCell.innerHTML = `<input type="date" value="${formatDateInput(currentDate)}">`;
-                timeCell.innerHTML = `<input type="time" value="${currentTime}">`;
-  
-                btn.innerHTML = `<i class="fa fa-check"></i>`;
-                row.dataset.editing = "true";
-            }
-        }
-    });
-  
-    // Adicionar nova linha
-    document.querySelector(".add-btn").addEventListener("click", () => {
-        const newRow = document.createElement("tr");
-        newRow.dataset.editing = "true";
-        newRow.innerHTML = `
-            <td><input type="date"></td>
-            <td><input type="time"></td>
-            <td><button class="edit-btn"><i class="fa fa-check"></i></button></td>
-        `;
-        tableBody.appendChild(newRow);
-    });
-  
-    // Solicitar ajustes (salvar tudo)
-    document.querySelector(".solicitar-btn").addEventListener("click", () => {
-        const rows = tableBody.querySelectorAll("tr");
-        const ajustes = [];
-  
-        rows.forEach(row => {
-            let date, time;
-  
-            if (row.dataset.editing === "true") {
-                const dateInput = row.querySelector('input[type="date"]');
-                const timeInput = row.querySelector('input[type="time"]');
-  
-                if (dateInput && timeInput && dateInput.value && timeInput.value) {
-                    date = formatDateDisplay(dateInput.value);
-                    time = timeInput.value;
-  
-                    row.children[0].textContent = date;
-                    row.children[1].textContent = time;
-                    row.children[2].innerHTML = `<button class="edit-btn"><i class="fa fa-pen-to-square"></i></button>`;
-                    row.dataset.editing = "false";
-                }
-            }
-  
-            date = row.children[0].textContent;
-            time = row.children[1].textContent;
-  
-            if (date && time) {
-                ajustes.push({ data: date, hora: time });
-            }
+    try {
+        const response = await fetch("https://localhost:7212/api/solicitacao", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
         });
   
-        const observacao = document.getElementById("observacao").value;
-        console.log("Ajustes:", ajustes);
-        console.log("Observação:", observacao);
+        const respostaTexto = await response.text();
+        console.log("🔍 Resposta da API:", respostaTexto);
   
-        alert("Ajustes enviados com sucesso! ✅");
-    });
-  });
+        if (!response.ok) throw new Error(respostaTexto);
   
+        alert("Solicitação enviada com sucesso!");
+        fecharFormularioSolicitacao();
+        carregarSolicitacoes();
   
+    } catch (error) {
+        console.error("Erro ao enviar:", error);
+        alert("Erro ao enviar solicitação: " + error.message);
+    }
+}
+
+
   
+
+// ---------- CARREGAR SOLICITAÇÕES ----------
+async function carregarSolicitacoes() {
+    const tabela = document.getElementById("tabelaSolicitacoes");
+    tabela.innerHTML = "";
   
-  // Helpers de formatação de datas
-  function formatDateDisplay(isoDate) {
-    const [yyyy, mm, dd] = isoDate.split("-");
-    return `${dd}/${mm}/${yyyy}`;
+    const userId = localStorage.getItem("cadastroId");
+    if (!userId) return;
+  
+    try {
+      const response = await fetch(`https://localhost:7212/api/solicitacao/usuario/${userId}`);
+      if (!response.ok) throw new Error("Erro ao buscar");
+  
+      const solicitacoes = await response.json();
+  
+      solicitacoes.forEach(s => {
+        const statusLabel = traduzirStatus(s.status);
+        const statusClass = statusLabel.toLowerCase();
+  
+        const tr = document.createElement("tr");
+  
+        let acoes = `
+          <button class="edit-btn" data-id="${s.idSolicitacao}">✏️</button>
+          <button class="delete-btn" data-id="${s.idSolicitacao}">🗑️</button>
+        `;
+  
+        if (s.status === 0) {
+          acoes += `
+            <button class="aprove-btn" data-id="${s.idSolicitacao}">✅</button>
+            <button class="reject-btn" data-id="${s.idSolicitacao}">❌</button>
+          `;
+        }
+  
+        tr.innerHTML = `
+          <td>${formatarData(new Date())}</td>
+          <td>${s.horario}</td>
+          <td>${s.observacao}</td>
+          <td><span class="badge status-${statusClass}">${statusLabel}</span></td>
+          <td>${acoes}</td>
+        `;
+  
+        tabela.appendChild(tr);
+      });
+  
+      // Eventos de ação
+      document.querySelectorAll(".aprove-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id");
+          await atualizarStatusSolicitacao(id, true);
+        });
+      });
+  
+      document.querySelectorAll(".reject-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id");
+          await atualizarStatusSolicitacao(id, false);
+        });
+      });
+  
+      document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id");
+          await deletarSolicitacao(id);
+        });
+      });
+  
+      document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = btn.getAttribute("data-id");
+          const novaJustificativa = prompt("Nova justificativa:");
+          const novoHorario = prompt("Novo horário (HH:mm):");
+  
+          if (novaJustificativa && novoHorario) {
+            const body = {
+              horario: novoHorario.length === 5 ? `${novoHorario}:00` : novoHorario,
+              observacao: novaJustificativa
+            };
+  
+            try {
+              const resp = await fetch(`https://localhost:7212/api/solicitacao/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+              });
+  
+              if (!resp.ok) throw new Error("Erro ao atualizar");
+              alert("Solicitação atualizada com sucesso!");
+              carregarSolicitacoes();
+            } catch (e) {
+              console.error("Erro ao editar:", e);
+              alert("Erro ao editar solicitação.");
+            }
+          }
+        });
+      });
+  
+      const solicitacaoAprovada = solicitacoes.find(s => s.status === 1);
+      if (solicitacaoAprovada) {
+        await atualizarRegistroSeAprovado(solicitacaoAprovada);
+      }
+  
+    } catch (error) {
+      console.error("Erro ao carregar:", error);
+    }
   }
   
-  function formatDateInput(dateStr) {
-    const [dd, mm, yyyy] = dateStr.split("/");
-    return `${yyyy}-${mm}-${dd}`;
+
+
+  async function atualizarStatusSolicitacao(id, aprovar) {
+    const url = `https://localhost:7212/api/solicitacao/${aprovar ? "aprovar" : "rejeitar"}/${id}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "PUT"
+      });
+  
+      const respostaTexto = await response.text();
+      console.log("🔍 Resposta da API:", respostaTexto);
+  
+      if (!response.ok) {
+        throw new Error(respostaTexto);
+      }
+  
+      const result = JSON.parse(respostaTexto);
+      alert(result.message || "Status atualizado com sucesso!");
+      carregarSolicitacoes();
+  
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+      alert("Erro ao atualizar status: " + error.message);
+    }
   }
   
+
+
+
+// ---------- DELETAR SOLICITAÇÃO ----------
+async function deletarSolicitacao(id) {
+    if (!confirm("Tem certeza que deseja excluir esta solicitação?")) return;
+    try {
+        const response = await fetch(`https://localhost:7212/api/solicitacao/${id}`, {
+            method: "DELETE"
+        });
+        if (!response.ok) throw new Error("Erro ao deletar solicitação.");
+        alert("Solicitação deletada.");
+        carregarSolicitacoes();
+    } catch (error) {
+        console.error("Erro ao deletar:", error);
+    }
+}
+
+// ---------- ATUALIZAR REGISTRO ----------
+async function atualizarRegistroSeAprovado(solicitacao) {
+    const idRegistro = solicitacao.idRegistro;
+    const userId = solicitacao.userId;
+    const novoHorario = solicitacao.horario;
+
+    try {
+        const response = await fetch(`https://localhost:7212/api/Registro/usuario/${userId}`);
+        if (!response.ok) throw new Error("Erro ao buscar registros");
+
+        const registros = await response.json();
+        const registro = registros.find(r => r.idRegistro === idRegistro);
+
+        if (!registro) {
+            console.warn("Registro não encontrado para atualização.");
+            return;
+        }
+
+        const novaData = registro.dataInicio.split("T")[0] + "T" + novoHorario;
+
+        const body = {
+            idRegistro: idRegistro,
+            userId: userId,
+            dataInicio: novaData,
+            saidaAlmoco: registro.saidaAlmoco,
+            voltaAlmoco: registro.voltaAlmoco,
+            fim: registro.fim,
+            totalHora: registro.totalHora,
+            horarioExtra: registro.horarioExtra,
+            qtdeBatidas: registro.qtdeBatidas
+        };
+
+        const updateResp = await fetch(`https://localhost:7212/api/Registro/${idRegistro}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+
+        if (!updateResp.ok) throw new Error("Erro ao atualizar ponto");
+
+        // alert removido
+    } catch (error) {
+        console.error("Erro ao atualizar registro:", error);
+    }
+}
+
+
+// ---------- UTILITÁRIOS ----------
+function traduzirStatus(status) {
+    switch (status) {
+        case 0: case "Pendente": return "Pendente";
+        case 1: case "Aprovado": return "Aprovado";
+        case 2: case "Rejeitado": return "Rejeitado";
+        default: return "Desconhecido";
+    }
+}
+
+function formatarData(data) {
+    const dia = String(data.getDate()).padStart(2, "0");
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
+
+// ---------- INICIALIZAÇÃO ----------
+document.addEventListener("DOMContentLoaded", () => {
+    carregarSolicitacoes();
+});

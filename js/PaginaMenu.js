@@ -115,7 +115,7 @@ class RegistroService {
                     <td>${r.fim ? new Date(r.fim).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Aguardando"}</td>
                     <td>${r.totalHora ? this.formatarHoras(r.totalHora) : '-'}</td>
                     <td>
-                       <button class="adjust-btn" onclick="window.location.href='Solicitar.html?id=${r.idRegistro}'">Ajustar</button>
+                        <button class="adjust-btn" onclick="abrirModal(${r.idRegistro})">Ajustar</button>
                     </td>
                 `;
                 tabela.appendChild(tr);
@@ -273,3 +273,52 @@ document.getElementById('uploadInput').addEventListener('change', async function
         console.error("Erro ao ler o arquivo:", error);
     };
 });
+
+
+
+
+
+
+function abrirModal(idRegistro) {
+    idRegistroSelecionado = idRegistro;
+    document.getElementById("modalAjuste").style.display = "flex";
+}
+
+function fecharModal() {
+    document.getElementById("modalAjuste").style.display = "none";
+}
+
+
+async function enviarAjuste() {
+    const horario = document.getElementById("novoHorario").value;
+    const userId = localStorage.getItem("cadastroId");
+
+    if (!horario || !userId || !idRegistroSelecionado) {
+        alert("Preencha o horário corretamente.");
+        return;
+    }
+
+    const solicitacao = {
+        userId: parseInt(userId),
+        idRegistro: idRegistroSelecionado,
+        horario: horario + ":00",
+        status: 0,
+        observacao: "Ajuste de horário solicitado "
+    };
+
+    try {
+        const response = await fetch("https://localhost:7212/api/solicitacao", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(solicitacao) 
+        });
+
+        if (!response.ok) throw new Error("Erro ao enviar solicitação.");
+
+        alert("Solicitação enviada com sucesso!");
+        fecharModal();
+    } catch (error) {
+        console.error("Erro ao enviar ajuste:", error);
+        alert("Erro ao enviar solicitação.");
+    }
+}
