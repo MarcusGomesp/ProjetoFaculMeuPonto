@@ -46,17 +46,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const cadastroId = parseInt(data?.cadastroId);
             const idRegistro = data?.idRegistro;
 
-            // ✅ Validação segura
             if (!data || !data.email || !data.nome || isNaN(cadastroId)) {
                 alert("Falha ao autenticar. Dados inválidos.");
                 console.error("❌ Dados inválidos recebidos:", data);
                 return;
             }
 
-            // ✅ LIMPA TUDO ANTES DE SALVAR
             localStorage.clear();
 
-            // ✅ Agora salva os dados novos
             localStorage.setItem("emailUsuario", data.email);
             localStorage.setItem("nomeUsuario", data.nome);
             localStorage.setItem("cadastroId", cadastroId.toString());
@@ -84,7 +81,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// Impede voltar para tela anterior com botão "voltar"
 if (window.history && window.history.pushState) {
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = function () {

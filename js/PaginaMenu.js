@@ -9,7 +9,7 @@ const botaoBatida = document.getElementById("batidaPontoBtn");
 
 class RegistroService {
     constructor() {
-        this.apiUrl = apiUrl;
+        this.apiUrl = "https://localhost:7212/api/Registro";
     }
 
     async validarIdRegistro() {
@@ -91,21 +91,15 @@ class RegistroService {
     async listarHistorico() {
         try {
             const userId = localStorage.getItem("cadastroId");
-    
-            if (!userId) {
-                throw new Error("Usuário não encontrado no localStorage.");
-            }
-    
+            if (!userId) throw new Error("Usuário não encontrado no localStorage.");
+
             const response = await fetch(`https://localhost:7212/api/registro/usuario/${userId}`);
-    
-            if (!response.ok) {
-                throw new Error("Erro ao buscar registros do usuário");
-            }
-    
+            if (!response.ok) throw new Error("Erro ao buscar registros do usuário");
+
             const registros = await response.json();
             const tabela = document.getElementById("tabelaHistórico");
             tabela.innerHTML = "";
-    
+
             registros.forEach(r => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
@@ -114,49 +108,40 @@ class RegistroService {
                     <td>${new Date(r.dataInicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                     <td>${r.fim ? new Date(r.fim).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Aguardando"}</td>
                     <td>${r.totalHora ? this.formatarHoras(r.totalHora) : '-'}</td>
-                    <td>
-                        <button class="adjust-btn" onclick="abrirModal(${r.idRegistro})">Ajustar</button>
-                    </td>
+                    <td><button class="adjust-btn" onclick="abrirModal(${r.idRegistro})">Ajustar</button></td>
                 `;
                 tabela.appendChild(tr);
             });
-    
+
             const ultimo = registros[registros.length - 1];
             if (ultimo && ultimo.qtdeBatidas < 4) {
                 registroAtual = { ...ultimo };
-    
                 const textos = ["Saída para almoço", "Volta do almoço", "Finalizar expediente"];
                 botaoBatida.textContent = textos[registroAtual.qtdeBatidas - 1] || "Bater ponto";
-    
                 botaoBatida.classList.replace("btn-primary", "btn-danger");
             }
         } catch (error) {
             console.error("Erro ao listar histórico:", error);
         }
     }
-    
 
     async listarUltimosRegistros() {
         try {
             const userId = localStorage.getItem("cadastroId");
             if (!userId) throw new Error("ID do usuário não encontrado.");
-    
+
             const response = await fetch(`https://localhost:7212/api/registro/usuario/${userId}`);
-    
             if (!response.ok) throw new Error("Erro ao buscar registros");
-    
+
             const registros = await response.json();
-    
             const lista = document.getElementById("ultimosRegistros");
             lista.innerHTML = "";
-    
-            const ultimos = registros.slice(0, 3); 
-    
+
+            const ultimos = registros.slice(0, 3);
             ultimos.forEach(r => {
                 const item = document.createElement("li");
                 const data = new Date(r.dataInicio).toLocaleDateString();
                 const hora = new Date(r.dataInicio).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
                 item.textContent = `${data} - ${hora} (${r.qtdeBatidas} batida${r.qtdeBatidas > 1 ? 's' : ''})`;
                 lista.appendChild(item);
             });
@@ -164,7 +149,6 @@ class RegistroService {
             console.error("Erro ao carregar últimos registros:", error);
         }
     }
-    
 
     formatarHoras(str) {
         if (!str) return '-';
@@ -180,6 +164,7 @@ class RegistroService {
         this.atualizarRelogio();
         await this.listarHistorico();
         await this.listarUltimosRegistros();
+         await this.carregarBancoHoras();
     }
 
     atualizarRelogio() {
@@ -191,6 +176,27 @@ class RegistroService {
         }).format(agora);
         document.getElementById('clock').textContent = hora;
     }
+
+    async carregarBancoHoras() {
+        try {
+            const userId = localStorage.getItem("cadastroId");
+            if (!userId) throw new Error("ID do usuário não encontrado.");
+    
+            const response = await fetch(`https://localhost:7212/api/registro/banco-horas/${userId}`);
+            if (!response.ok) throw new Error("Erro ao buscar banco de horas.");
+    
+            const dados = await response.json();
+    
+            const [h, m] = dados.totalHorasExtras.split(':');
+            const formatado = `${parseInt(h)}h ${parseInt(m)}m`;
+    
+            document.getElementById("bancoHoras").textContent = formatado.startsWith("-") ? formatado : `+${formatado}`;
+        } catch (error) {
+            console.error("Erro ao carregar banco de horas:", error);
+            document.getElementById("bancoHoras").textContent = "Erro";
+        }
+    }
+    
 }
 
 const registroService = new RegistroService();
@@ -199,7 +205,12 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarNomeUsuario();
     carregarImagemPerfil(); 
     registroService.carregarDados();
-    document.getElementById("batidaPontoBtn").addEventListener("click", () => registroService.registrarPonto());
+    
+
+    document.getElementById("batidaPontoBtn").addEventListener(
+        "click",
+        registroService.registrarPonto.bind(registroService)
+    );
 });
 
 async function carregarNomeUsuario() {
@@ -273,9 +284,6 @@ document.getElementById('uploadInput').addEventListener('change', async function
         console.error("Erro ao ler o arquivo:", error);
     };
 });
-
-
-
 
 
 

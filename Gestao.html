@@ -18,11 +18,20 @@
 
   <main class="main-content">
     <header class="header">
-      <div class="user-info">
-        <span>Aman Mathur</span>
-        <img src="https://via.placeholder.com/40" alt="Foto do usuário" class="user-avatar">
+      <div class="user-menu">
+        <div class="user-info" onclick="toggleMenu()">
+          <img src="img/profile.jpg" alt="Foto de perfil" class="user-avatar" id="profilePic">
+          <span id="userName">Carregando...</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <ul class="dropdown-menu" id="dropdownMenu">
+          <li><a href="#" onclick="document.getElementById('uploadInput').click(); event.stopPropagation();">Editar Foto</a></li>
+          <li><input type="file" id="uploadInput" accept="image/*" style="display: none;"></li>
+          <li><a href="Login.html">Sair</a></li>
+        </ul>
       </div>
     </header>
+    
 
     <section class="solicitacoes">
       <div class="section-header">
@@ -31,16 +40,7 @@
       </div>
       <table>
         <tbody>
-          <tr>
-            <td>#108</td>
-            <td>Raul Sarasvati</td>
-            <td><button class="btn detalhes" a href="Solicitar.html">Detalhes</button></td>
-            <td class="btn-group">
-              <button class="btn recusar">Recusar</button>
-              <button class="btn aprovar">Aprovar</button>
-            </td>
-          </tr>
-          <!-- Outros registros aqui -->
+     
         </tbody>
       </table>
     </section>
@@ -48,7 +48,7 @@
     <section class="gerenciamento">
       <div class="section-header">
         <h3>Gerenciamento</h3>
-        <span>Selecionar ano/mês</span>
+        <span></span>
       </div>
       <table>
         <thead>
@@ -56,19 +56,21 @@
             <th>Nome</th>
             <th>Status</th>
             <th>Histórico</th>
+            <th>Batidas</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="gerenciamento-body">
           <tr>
-            <td><img src="https://via.placeholder.com/30" class="avatar"> Raul Sarasvati</td>
+            <td><img src="https://via.placeholder.com/30" class="avatar"></td>
             <td class="positivo">+01:27</td>
-            <td><a href="#">Visualizar histórico</a></td>
+            <td><a href="Solicitar.html">Visualizar histórico</a></td>
             <td>5</td>
           </tr>
         </tbody>
       </table>
     </section>
   </main>
+  <script src="js/GestaoSolicitacao.js"></script>
 </body>
 </html>

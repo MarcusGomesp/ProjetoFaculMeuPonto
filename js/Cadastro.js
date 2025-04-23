@@ -23,7 +23,6 @@ class CadastroService {
     }
 }
 
-// Captura o evento do formulário de cadastro
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("cadastro-form");
     const cadastroService = new CadastroService();
@@ -39,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const senha = form.elements["senha"].value;
         const confirmarSenha = form.elements["confirmarSenha"].value;
     
-        // Valida se as senhas são iguais
         if (senha !== confirmarSenha) {
             alert("As senhas não coincidem!");
             return;
@@ -59,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Cadastro realizado com sucesso!");
             console.log(resultado);
     
-            // Redireciona para outra página
             window.location.href = "Login.html";
         } catch (error) {
             alert("Erro ao cadastrar");
