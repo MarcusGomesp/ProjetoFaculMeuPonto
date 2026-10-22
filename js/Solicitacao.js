@@ -4,7 +4,7 @@ async function carregarNomeUsuario() {
   if (!email) return;
 
   try {
-      const response = await fetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
+      const response = await apiFetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
       const usuario = await response.json();
       document.getElementById("userName").textContent = usuario.nome || "Usuário";
   } catch (error) {
@@ -27,7 +27,7 @@ document.getElementById('uploadInput').addEventListener('change', async function
       if (!cadastroId) return alert("ID não encontrado.");
 
       try {
-          const response = await fetch(`https://localhost:7212/api/cadastro/Imagem/${cadastroId}`, {
+          const response = await apiFetch(`https://localhost:7212/api/cadastro/Imagem/${cadastroId}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ imagemBase64: base64Image })
@@ -87,7 +87,7 @@ async function enviarSolicitacao() {
   };
 
   try {
-      const response = await fetch("https://localhost:7212/api/solicitacao", {
+      const response = await apiFetch("https://localhost:7212/api/solicitacao", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
@@ -115,7 +115,7 @@ async function carregarSolicitacoes() {
     if (!userId) return;
   
     try {
-        const response = await fetch(`https://localhost:7212/api/solicitacao/usuario/${userId}`);
+        const response = await apiFetch(`https://localhost:7212/api/solicitacao/usuario/${userId}`);
         if (!response.ok) throw new Error("Erro ao buscar");
   
         let solicitacoes = await response.json();
@@ -152,7 +152,7 @@ async function atualizarRegistroSeAprovado(solicitacao) {
   const novoHorario = solicitacao.horario;
 
   try {
-      const response = await fetch(`https://localhost:7212/api/Registro/usuario/${userId}`);
+      const response = await apiFetch(`https://localhost:7212/api/Registro/usuario/${userId}`);
       if (!response.ok) throw new Error("Erro ao buscar registros");
 
       const registros = await response.json();
@@ -173,7 +173,7 @@ async function atualizarRegistroSeAprovado(solicitacao) {
           qtdeBatidas: registro.qtdeBatidas
       };
 
-      const updateResp = await fetch(`https://localhost:7212/api/Registro/${idRegistro}`, {
+      const updateResp = await apiFetch(`https://localhost:7212/api/Registro/${idRegistro}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)

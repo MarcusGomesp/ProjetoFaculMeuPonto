@@ -16,7 +16,6 @@ class LoginService {
             }
 
             const data = await response.json();
-            console.log("🔐 Dados retornados da API:", data);
             return data;
         } catch (error) {
             console.error("Erro no login:", error);
@@ -26,6 +25,10 @@ class LoginService {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Abrir a tela de login (inclusive pelo link "Sair") encerra a sessão anterior
+    localStorage.removeItem("token");
+    localStorage.removeItem("tokenExpiraEm");
+
     const loginForm = document.querySelector(".login-box form");
     const loginService = new LoginService();
 
@@ -46,13 +49,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const cadastroId = parseInt(data?.cadastroId);
             const idRegistro = data?.idRegistro;
 
-            if (!data || !data.email || !data.nome || isNaN(cadastroId)) {
+            if (!data || !data.token || !data.email || !data.nome || isNaN(cadastroId)) {
                 alert("Falha ao autenticar. Dados inválidos.");
                 console.error("❌ Dados inválidos recebidos:", data);
                 return;
             }
 
             localStorage.clear();
+
+            // Token JWT: enviado pelo apiFetch (js/api.js) em todas as chamadas protegidas
+            localStorage.setItem("token", data.token);
+            if (data.expiraEm) localStorage.setItem("tokenExpiraEm", data.expiraEm);
 
             localStorage.setItem("emailUsuario", data.email);
             localStorage.setItem("nomeUsuario", data.nome);
