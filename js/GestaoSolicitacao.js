@@ -23,7 +23,7 @@ async function carregarNomeUsuario() {
     if (!email) return;
 
     try {
-        const response = await fetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
+        const response = await apiFetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
         const usuario = await response.json();
         document.getElementById("userName").textContent = usuario.nome || "Usuário";
         localStorage.setItem("cadastroId", usuario.userId);
@@ -55,7 +55,7 @@ document.getElementById('uploadInput').addEventListener('change', async function
         if (!cadastroId) return alert("ID não encontrado.");
 
         try {
-            const response = await fetch(`https://localhost:7212/api/perfil/Imagem/${cadastroId}`, {
+            const response = await apiFetch(`https://localhost:7212/api/perfil/Imagem/${cadastroId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ urlImagem: base64Image })
@@ -77,7 +77,7 @@ async function carregarSolicitacoesGestao() {
     tbody.innerHTML = "";
 
     try {
-        const response = await fetch("https://localhost:7212/api/solicitacao/gestao");
+        const response = await apiFetch("https://localhost:7212/api/solicitacao/gestao");
         if (!response.ok) throw new Error("Erro ao buscar solicitações.");
 
         let solicitacoes = await response.json();
@@ -135,7 +135,7 @@ function adicionarEventosGestao() {
             const id = btn.dataset.id;
             if (confirm("Deseja excluir esta solicitação?")) {
                 try {
-                    const resp = await fetch(`https://localhost:7212/api/solicitacao/${id}`, { method: "DELETE" });
+                    const resp = await apiFetch(`https://localhost:7212/api/solicitacao/${id}`, { method: "DELETE" });
                     if (!resp.ok) throw new Error("Erro ao deletar");
                     alert("Solicitação deletada com sucesso.");
                     carregarSolicitacoesGestao();
@@ -160,7 +160,7 @@ function adicionarEventosGestao() {
                 };
 
                 try {
-                    const resp = await fetch(`https://localhost:7212/api/solicitacao/${id}`, {
+                    const resp = await apiFetch(`https://localhost:7212/api/solicitacao/${id}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(body)
@@ -189,7 +189,7 @@ async function atualizarStatus(id, aprovar) {
 
     const url = `https://localhost:7212/api/solicitacao/${aprovar ? "aprovar" : "rejeitar"}/${id}`;
     try {
-        const response = await fetch(url, { method: "PUT" });
+        const response = await apiFetch(url, { method: "PUT" });
         const msg = await response.json();
         if (!response.ok) throw new Error(msg.message || "Erro");
 
@@ -204,7 +204,7 @@ async function atualizarStatus(id, aprovar) {
 
 async function buscarSolicitacaoPorId(id) {
     try {
-        const response = await fetch(`https://localhost:7212/api/solicitacao/${id}`);
+        const response = await apiFetch(`https://localhost:7212/api/solicitacao/${id}`);
         if (!response.ok) throw new Error("Erro ao buscar solicitação");
         return await response.json();
     } catch (err) {
@@ -218,7 +218,7 @@ async function carregarGerenciamento() {
     tbody.innerHTML = "";
 
     try {
-        const response = await fetch("https://localhost:7212/api/registro/gestao");
+        const response = await apiFetch("https://localhost:7212/api/registro/gestao");
         if (!response.ok) throw new Error("Erro ao buscar dados de gerenciamento.");
 
         let usuarios = await response.json();

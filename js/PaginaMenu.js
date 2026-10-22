@@ -17,7 +17,7 @@ class RegistroService {
         if (!cadastroId) return false;
 
         try {
-            const response = await fetch(`https://localhost:7212/api/cadastro/usuario/${cadastroId}`);
+            const response = await apiFetch(`https://localhost:7212/api/cadastro/usuario/${cadastroId}`);
             return response.ok;
         } catch (error) {
             console.error("Erro ao validar ID:", error);
@@ -52,7 +52,7 @@ class RegistroService {
                     registroAtual.fim = agora;
                     botaoBatida.textContent = "Bater ponto";
 
-                    await fetch(`${this.apiUrl}/${registroAtual.idRegistro}`, {
+                    await apiFetch(`${this.apiUrl}/${registroAtual.idRegistro}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(registroAtual)
@@ -65,7 +65,7 @@ class RegistroService {
             }
 
             if (registroAtual.qtdeBatidas === 1) {
-                const response = await fetch(this.apiUrl, {
+                const response = await apiFetch(this.apiUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(registroAtual)
@@ -75,7 +75,7 @@ class RegistroService {
                 registroAtual.idRegistro = dados.idRegistro;
                 localStorage.setItem("idRegistro", dados.idRegistro);
             } else {
-                await fetch(`${this.apiUrl}/${registroAtual.idRegistro}`, {
+                await apiFetch(`${this.apiUrl}/${registroAtual.idRegistro}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(registroAtual)
@@ -93,7 +93,7 @@ class RegistroService {
             const userId = localStorage.getItem("cadastroId");
             if (!userId) throw new Error("Usuário não encontrado no localStorage.");
 
-            const response = await fetch(`https://localhost:7212/api/registro/usuario/${userId}`);
+            const response = await apiFetch(`https://localhost:7212/api/registro/usuario/${userId}`);
             if (!response.ok) throw new Error("Erro ao buscar registros do usuário");
 
             const registros = await response.json();
@@ -130,7 +130,7 @@ class RegistroService {
             const userId = localStorage.getItem("cadastroId");
             if (!userId) throw new Error("ID do usuário não encontrado.");
 
-            const response = await fetch(`https://localhost:7212/api/registro/usuario/${userId}`);
+            const response = await apiFetch(`https://localhost:7212/api/registro/usuario/${userId}`);
             if (!response.ok) throw new Error("Erro ao buscar registros");
 
             const registros = await response.json();
@@ -182,7 +182,7 @@ class RegistroService {
             const userId = localStorage.getItem("cadastroId");
             if (!userId) throw new Error("ID do usuário não encontrado.");
     
-            const response = await fetch(`https://localhost:7212/api/registro/banco-horas/${userId}`);
+            const response = await apiFetch(`https://localhost:7212/api/registro/banco-horas/${userId}`);
             if (!response.ok) throw new Error("Erro ao buscar banco de horas.");
     
             const dados = await response.json();
@@ -223,7 +223,7 @@ async function carregarNomeUsuario() {
     }
 
     try {
-        const response = await fetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
+        const response = await apiFetch(`https://localhost:7212/api/cadastro/usuario?email=${encodeURIComponent(email)}`);
         if (!response.ok) throw new Error("Erro ao buscar usuário");
 
         const usuario = await response.json();
@@ -263,7 +263,7 @@ document.getElementById('uploadInput').addEventListener('change', async function
         }
 
         try {
-            const response = await fetch(`https://localhost:7212/api/perfil/Imagem/${cadastroId}`, {
+            const response = await apiFetch(`https://localhost:7212/api/perfil/Imagem/${cadastroId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ urlImagem: base64Image })
@@ -315,7 +315,7 @@ async function enviarAjuste() {
     };
 
     try {
-        const response = await fetch("https://localhost:7212/api/solicitacao", {
+        const response = await apiFetch("https://localhost:7212/api/solicitacao", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(solicitacao) 
